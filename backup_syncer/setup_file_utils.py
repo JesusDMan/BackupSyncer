@@ -19,8 +19,7 @@ def print_setup(setup_dirs: List[Dict[str, str]]) -> None:
     Prints the setup from the setup file
     :return: None
     """
-    print(f"{'~'*40}\n"
-          f"Setup is:")
+    print(f"{'~'*40}\n" f"Setup is:")
     for line in setup_dirs:
         print(f"src: ~~~~~~~~~ {line['src']} dst: ~~~~~~~~~ {line['dst']}")
 

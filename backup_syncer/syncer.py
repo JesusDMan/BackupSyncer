@@ -7,7 +7,7 @@ from BackupSyncer.file_syncer.sync_file_types import (
     sync_attribute_create,
     sync_attribute_delete,
     sync_attribute_replace,
-    sync_attribute_outdated
+    sync_attribute_outdated,
 )
 from BackupSyncer.file_syncer.utils import check_if_identical
 
@@ -30,8 +30,9 @@ class Syncer:
     display_seperator: Callable[[Any], None] = lambda self: print("~" * 40)
 
     def __init__(self, setup_fp: str):
-
-        self.setup_directories: List[Dict[str, str]] = setup_file_shit.get_setup_dirs_from_user(setup_fp)
+        self.setup_directories: List[
+            Dict[str, str]
+        ] = setup_file_shit.get_setup_dirs_from_user(setup_fp)
 
         self.files_to_create: List[sync_attribute_create.SyncAttributeCreate] = []
         # Files that are on the source but not on the destination
@@ -90,11 +91,11 @@ class Syncer:
             "m": lambda *args: print(self.CHANGE_MENU),
         }
         change = (
-                         self.files_to_create
-                         or self.files_to_delete
-                         or self.files_to_replace
-                         or self.outdated_files
-                 ) and input("Do you want to change something? ([y]/n): ") != "n"
+            self.files_to_create
+            or self.files_to_delete
+            or self.files_to_replace
+            or self.outdated_files
+        ) and input("Do you want to change something? ([y]/n): ") != "n"
         if not change:
             return
         print(self.CHANGE_MENU)
@@ -164,7 +165,7 @@ class Syncer:
         for src_dir in os.listdir(src_dp):
             if os.path.isdir(os.path.join(src_dp, src_dir)):
                 if (
-                        src_dir not in dst_directories
+                    src_dir not in dst_directories
                 ):  # If the directory isn't in the dst_dir
                     to_create_item = sync_attribute_create.SyncAttributeCreate(
                         original_file_path=os.path.join(src_dp, src_dir),
@@ -187,10 +188,10 @@ class Syncer:
         """
 
         for item in (
-                self.files_to_create
-                + self.files_to_replace
-                + self.files_to_delete
-                + self.outdated_files
+            self.files_to_create
+            + self.files_to_replace
+            + self.files_to_delete
+            + self.outdated_files
         ):
             if not item.is_canceled:
                 print(item)
