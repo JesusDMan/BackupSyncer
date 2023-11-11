@@ -1,8 +1,9 @@
 # Backup Syncer!
 
-This repo can be installed with:
+The package can be installed with:
 
-`git clone <>`
+`git clone git@github.com:JesusDMan/BackupSyncer.git`
 
 `pip install .`
 
+Usage: `python bin/sync_files.py`

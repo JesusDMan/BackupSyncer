@@ -2,14 +2,14 @@
 import os
 from typing import List, Callable, Any, Dict
 
-from BackupSyncer.file_syncer import setup_file_shit
-from BackupSyncer.file_syncer.sync_file_types import (
+from BackupSyncer.backup_syncer import setup_file_utils
+from BackupSyncer.backup_syncer.sync_file_types import (
     sync_attribute_create,
     sync_attribute_delete,
     sync_attribute_replace,
     sync_attribute_outdated,
 )
-from BackupSyncer.file_syncer.utils import check_if_identical
+from BackupSyncer.backup_syncer.utils import check_if_identical
 
 
 class Syncer:
@@ -32,7 +32,7 @@ class Syncer:
     def __init__(self, setup_fp: str):
         self.setup_directories: List[
             Dict[str, str]
-        ] = setup_file_shit.get_setup_dirs_from_user(setup_fp)
+        ] = setup_file_utils.get_setup_dirs_from_user(setup_fp)
 
         self.files_to_create: List[sync_attribute_create.SyncAttributeCreate] = []
         # Files that are on the source but not on the destination

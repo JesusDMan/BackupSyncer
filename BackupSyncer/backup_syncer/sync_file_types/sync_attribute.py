@@ -2,7 +2,7 @@ import abc
 import os
 import shutil
 
-from BackupSyncer.file_syncer.utils import attribute_type
+from BackupSyncer.backup_syncer.utils import attribute_type
 
 
 class SyncAttribute(abc.ABC):

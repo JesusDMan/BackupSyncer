@@ -1,5 +1,4 @@
-from BackupSyncer.file_syncer import setup_file_shit
-from BackupSyncer.file_syncer.syncer import Syncer
+from BackupSyncer.backup_syncer.syncer import Syncer
 
 
 def main():
@@ -9,3 +8,7 @@ def main():
     syncer.make_change_in_action()
     syncer.finale_sync()
     input("Sync was successful! Press enter to exit")
+
+
+if __name__ == "__main__":
+    main()

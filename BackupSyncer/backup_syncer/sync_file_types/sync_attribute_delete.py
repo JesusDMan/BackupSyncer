@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from BackupSyncer.file_syncer.sync_file_types.sync_attribute import SyncAttribute
+from BackupSyncer.backup_syncer.sync_file_types.sync_attribute import SyncAttribute
 
 
 class SyncAttributeDelete(SyncAttribute):
