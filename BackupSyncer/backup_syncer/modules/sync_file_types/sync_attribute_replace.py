@@ -1,17 +1,17 @@
 import os
 import shutil
 
-from BackupSyncer.backup_syncer.sync_file_types.sync_attribute import SyncAttribute
+from backup_syncer.modules.sync_file_types.sync_attribute import SyncAttribute
 
 
 class SyncAttributeReplace(SyncAttribute):
     def change(self):
         if self.is_canceled:
             print("Already canceled...")
-            return
 
         elif input("Do you want to avoid replacing? (y/[n]): ") == "y":
             self.remove()
+
         elif input("Do you want to replace the other way? (y/[n]): ") == "y":
             new_source = self.backup_file_path
             self.backup_file_path = self.original_file_path

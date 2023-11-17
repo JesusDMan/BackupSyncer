@@ -1,4 +1,4 @@
-from BackupSyncer.backup_syncer.sync_file_types.sync_attribute_replace import (
+from backup_syncer.modules.sync_file_types.sync_attribute_replace import (
     SyncAttributeReplace,
 )
 

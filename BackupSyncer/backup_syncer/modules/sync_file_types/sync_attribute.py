@@ -1,8 +1,6 @@
 import abc
-import os
-import shutil
 
-from BackupSyncer.backup_syncer.utils import attribute_type
+from backup_syncer.modules.utils import attribute_type
 
 
 class SyncAttribute(abc.ABC):
@@ -11,7 +9,10 @@ class SyncAttribute(abc.ABC):
     def __init__(self, original_file_path: str, backup_file_path: str):
         self.original_file_path = original_file_path
         self.backup_file_path = backup_file_path
-        self.file_type = attribute_type(self.original_file_path)
+        if self.original_file_path:
+            self.file_type = attribute_type(self.original_file_path)
+        else:
+            self.file_type = attribute_type(self.backup_file_path)
         self.is_canceled = False
 
     def remove(self):

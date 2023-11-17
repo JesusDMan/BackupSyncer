@@ -36,10 +36,10 @@ def create_setup(setup_fp: str) -> None:
 
 def creat_missing_destinations(setup_dirs: List[Dict[str, str]]):
     for line in setup_dirs:
-        dst_dp = line["dst"]
-        if not os.path.exists(dst_dp):
-            print(f"{dst_dp} doesn't exists, creating...")
-            os.makedirs(dst_dp)
+        dst_dir_path = line["dst"]
+        if not os.path.exists(dst_dir_path):
+            print(f"{dst_dir_path} doesn't exists, creating...")
+            os.makedirs(dst_dir_path)
 
 
 def validate_src_dst(attribute: str) -> bool:
@@ -52,14 +52,14 @@ def validate_src_dst(attribute: str) -> bool:
         print(f"Invalid: '{attribute}' can't contain ' | ' more than once, skipping...")
         return False
 
-    src_dp, dst_dp = attribute.split(" | ")
+    src_dir_path, dst_dir_path = attribute.split(" | ")
 
-    if not os.path.exists(src_dp):
-        print(f"{src_dp} doesn't exist, skipping...")
-    elif not os.path.isdir(src_dp):
-        print(f"{src_dp} exists but not a directory, skipping...")
-    elif not os.path.isdir(dst_dp):
-        print(f"{dst_dp} exists but not a directory, skipping...")
+    if not os.path.exists(src_dir_path):
+        print(f"{src_dir_path} doesn't exist, skipping...")
+    elif not os.path.isdir(src_dir_path):
+        print(f"{src_dir_path} exists but not a directory, skipping...")
+    elif not os.path.isdir(dst_dir_path):
+        print(f"{dst_dir_path} exists but not a directory, skipping...")
     else:
         return True
     return False

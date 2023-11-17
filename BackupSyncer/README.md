@@ -6,4 +6,4 @@ The package can be installed with:
 
 `pip install .`
 
-Usage: `python bin/sync_files.py`
+Usage: `sync`
