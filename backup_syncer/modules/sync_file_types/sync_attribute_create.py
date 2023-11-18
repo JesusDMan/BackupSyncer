@@ -1,6 +1,7 @@
 import os
 import shutil
 
+from backup_syncer.modules.printing_utils import copy_dir, copy_file
 from backup_syncer.modules.sync_file_types.sync_attribute import SyncAttribute
 
 
@@ -17,12 +18,10 @@ class SyncAttributeCreate(SyncAttribute):
 
         if self.item_type == "directory":
             os.mkdir(self.backup_file_path)
-            shutil.copytree(
-                self.source_file_path, self.backup_file_path, dirs_exist_ok=True
-            )
+            copy_dir(src_dp=self.source_file_path, backup_dp=self.backup_file_path)
 
         else:
-            shutil.copy(self.source_file_path, self.backup_file_path)
+            copy_file(src_fp=self.source_file_path, backup_fp=self.backup_file_path)
 
     def __present__(self):
         return (
