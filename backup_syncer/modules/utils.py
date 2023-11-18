@@ -1,6 +1,8 @@
 import filecmp
 import os
 
+from backup_syncer.modules.backup_syncer_config import BackupSyncerConfig
+
 
 def check_if_identical(fp1: str, fp2: str) -> bool:
     """
@@ -19,8 +21,8 @@ def check_if_identical(fp1: str, fp2: str) -> bool:
     return filecmp.cmp(fp1, fp2)
 
 
-def attribute_type(filepath: str) -> str:
-    if os.path.isdir(filepath):
+def get_item_type(item_path: str) -> str:
+    if os.path.isdir(item_path):
         return "directory"
     else:
         return "file"
