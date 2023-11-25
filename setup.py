@@ -9,6 +9,7 @@ setup(
     install_requires=[
         "shutils",
         "langdetect",
+        "tqdm"
     ],
     url="https://github.com/JesusDMan/JesusDMan",
     author="JesusDMan",
