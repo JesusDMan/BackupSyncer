@@ -1,5 +1,6 @@
 import filecmp
 import os
+from typing import Tuple, List
 
 from tqdm import tqdm
 
@@ -28,7 +29,7 @@ def get_item_type(item_path: str) -> str:
         return "file"
 
 
-def copy_file(src_fp: str, backup_fp: str):
+def copy_file(src_fp: str, backup_fp: str) -> None:
     with tqdm(
         total=os.path.getsize(src_fp),
         unit="B",
@@ -39,7 +40,7 @@ def copy_file(src_fp: str, backup_fp: str):
         copy_file_with_progress(src_fp, backup_fp, pbar)
 
 
-def copy_file_with_progress(src_fp: str, dst_fp: str, pbar: tqdm):
+def copy_file_with_progress(src_fp: str, dst_fp: str, pbar: tqdm) -> None:
     chunk_size = 4096
     source_f = open(src_fp, "rb")
     backup_f = open(dst_fp, "wb", buffering=chunk_size * 1000)
@@ -63,7 +64,7 @@ def get_files_count(dir_path: str) -> int:
     return number_of_files
 
 
-def get_dir_size(dir_path: str):
+def get_dir_size_and_files(dir_path: str) -> Tuple[int, List[str]]:
     files_size_sum = 0
     files = []
     if os.path.isdir(dir_path):
@@ -74,8 +75,8 @@ def get_dir_size(dir_path: str):
     return files_size_sum, files
 
 
-def copy_dir(src_dp: str, backup_dp: str):
-    dir_size, files = get_dir_size(src_dp)
+def copy_dir(src_dp: str, backup_dp: str) -> None:
+    dir_size, files = get_dir_size_and_files(src_dp)
 
     with tqdm(
         total=dir_size,
