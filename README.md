@@ -4,6 +4,6 @@ The package can be installed with:
 
 `git clone git@github.com:JesusDMan/BackupSyncer.git`
 
-`pip install .`
+`pip install BackupSyncer`
 
-Usage: `sync`
+Usage: `bsync`
