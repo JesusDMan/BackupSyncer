@@ -38,25 +38,25 @@ class Syncer:
             Dict[str, str]
         ] = backup_syncer_config.sync_config_dirs
 
-        self.files_to_create: List[sync_attribute_create.SyncAttributeCreate] = []
+        self.items_to_create: List[sync_attribute_create.SyncAttributeCreate] = []
         # Files that are on the source but not on the destination
-        self.files_to_delete: List[sync_attribute_delete.SyncAttributeDelete] = []
+        self.items_to_delete: List[sync_attribute_delete.SyncAttributeDelete] = []
         # Files that are on the destination but not on the source, and the source is newer
         self.files_to_replace: List[sync_attribute_replace.SyncAttributeReplace] = []
         # Files that are not updated in the destination, and will be recreated from the source
         self.outdated_files: List[sync_attribute_outdated.SyncAttributeOutdated] = []
         # Files that are newer on the destination than on the source, and won't be replaced
         self.sync_actions_change_options = {
-            "n": self.files_to_create,
-            "d": self.files_to_delete,
+            "n": self.items_to_create,
+            "d": self.items_to_delete,
             "r": self.files_to_replace,
             "o": self.outdated_files,
             "m": lambda *args: print(self.CHANGE_MENU),
         }
         self.printing_categories_titles = {
-            "Going to be created:": self.files_to_create,
+            "Going to be created:": self.items_to_create,
             "Going to be updated:": self.files_to_replace,
-            "Going to be deleted:": self.files_to_delete,
+            "Going to be deleted:": self.items_to_delete,
             "Outdated source (the destination is newer, won't be replaced):": self.outdated_files,
         }
 
@@ -75,17 +75,17 @@ class Syncer:
         for item_path in backup_dirs:
             if item_path not in src_dirs:
                 item_to_delete = sync_attribute_delete.SyncAttributeDelete(
-                    index=len(self.files_to_delete),
+                    index=len(self.items_to_delete),
                     backup_item_path=os.path.join(backup_dir_path, item_path),
                 )
-                self.files_to_delete.append(item_to_delete)
+                self.items_to_delete.append(item_to_delete)
 
     def check_if_sync_actions_change_is_needed(self) -> bool:
         return (
-                self.files_to_create
-                or self.files_to_delete
-                or self.files_to_replace
-                or self.outdated_files
+            self.items_to_create
+            or self.items_to_delete
+            or self.files_to_replace
+            or self.outdated_files
         ) and input("Do you want to change something? ([y]/n): ") != "n"
 
     def make_changes_in_sync_actions(self) -> None:
@@ -112,11 +112,11 @@ class Syncer:
                     print(f"'{change}' - invalid request.")
                 else:
                     change = (
-                            input("Do you want to change something else? ([y]/n): ") != "n"
+                        input("Do you want to change something else? ([y]/n): ") != "n"
                     )
 
     def scan_file(
-            self, src_file_path: str, src_file_name: str, backup_dir_path: str
+        self, src_file_path: str, src_file_name: str, backup_dir_path: str
     ) -> None:
         backup_dirs = os.listdir(backup_dir_path)
 
@@ -124,11 +124,11 @@ class Syncer:
 
         if src_file_name not in backup_dirs:
             item_to_create = sync_attribute_create.SyncAttributeCreate(
-                index=len(self.files_to_create),
+                index=len(self.items_to_create),
                 original_item_path=src_file_path,
                 backup_item_path=os.path.join(backup_dir_path, src_file_name),
             )
-            self.files_to_create.append(item_to_create)
+            self.items_to_create.append(item_to_create)
 
         elif not check_if_identical(src_file_path, backup_file_path):
             if os.stat(backup_file_path).st_mtime > os.stat(src_file_path).st_mtime:
@@ -147,7 +147,7 @@ class Syncer:
                 self.files_to_replace.append(item_to_replace)
 
     def scan_directory(
-            self, src_dir_path: str, backup_dir_path: str, progress_bar: tqdm
+        self, src_dir_path: str, backup_dir_path: str, progress_bar: tqdm
     ) -> None:
         self.search_trash_in_backup(src_dir_path, backup_dir_path)
 
@@ -167,19 +167,19 @@ class Syncer:
 
             else:
                 to_create_item = sync_attribute_create.SyncAttributeCreate(
-                    index=len(self.files_to_create),
+                    index=len(self.items_to_create),
                     original_item_path=src_subdir_path,
                     backup_item_path=backup_subdir_path,
                 )
-                self.files_to_create.append(to_create_item)
+                self.items_to_create.append(to_create_item)
                 progress_bar.update(utils.get_files_count(src_subdir_path))
 
     def perform_sync(self) -> None:
         for item in (
-                self.files_to_create
-                + self.files_to_replace
-                + self.files_to_delete
-                + self.outdated_files
+            self.items_to_create
+            + self.files_to_replace
+            + self.items_to_delete
+            + self.outdated_files
         ):
             if not item.is_canceled:
                 print(item)
@@ -188,11 +188,11 @@ class Syncer:
     def scan_directories(self) -> None:
         for line in self.directories_to_scan:
             with tqdm(
-                    total=utils.get_files_count(line["src"]),
-                    unit="F",
-                    unit_scale=True,
-                    desc=f"Scanning {line['src']}",
-                    miniters=0.1,
+                total=utils.get_files_count(line["src"]),
+                unit="F",
+                unit_scale=True,
+                desc=f"Scanning {line['src']}",
+                miniters=0.1,
             ) as pbar:
                 self.scan_directory(
                     src_dir_path=line["src"],
