@@ -1,6 +1,9 @@
 import os
 from typing import List, Callable, Any, Dict
 
+from tqdm import tqdm
+
+from backup_syncer.modules import utils
 from backup_syncer.modules.backup_syncer_config import BackupSyncerConfig
 from backup_syncer.modules.sync_file_types import (
     sync_attribute_create,
@@ -79,10 +82,10 @@ class Syncer:
 
     def check_if_sync_actions_change_is_needed(self) -> bool:
         return (
-            self.files_to_create
-            or self.files_to_delete
-            or self.files_to_replace
-            or self.outdated_files
+                self.files_to_create
+                or self.files_to_delete
+                or self.files_to_replace
+                or self.outdated_files
         ) and input("Do you want to change something? ([y]/n): ") != "n"
 
     def make_changes_in_sync_actions(self) -> None:
@@ -109,11 +112,11 @@ class Syncer:
                     print(f"'{change}' - invalid request.")
                 else:
                     change = (
-                        input("Do you want to change something else? ([y]/n): ") != "n"
+                            input("Do you want to change something else? ([y]/n): ") != "n"
                     )
 
     def scan_file(
-        self, src_file_path: str, src_file_name: str, backup_dir_path: str
+            self, src_file_path: str, src_file_name: str, backup_dir_path: str
     ) -> None:
         backup_dirs = os.listdir(backup_dir_path)
 
@@ -143,7 +146,9 @@ class Syncer:
                 )
                 self.files_to_replace.append(item_to_replace)
 
-    def scan_directory(self, src_dir_path: str, backup_dir_path: str) -> None:
+    def scan_directory(
+            self, src_dir_path: str, backup_dir_path: str, progress_bar: tqdm
+    ) -> None:
         self.search_trash_in_backup(src_dir_path, backup_dir_path)
 
         backup_directories = os.listdir(backup_dir_path)
@@ -151,26 +156,30 @@ class Syncer:
             src_subdir_path = os.path.join(src_dir_path, src_dir)
             backup_subdir_path = os.path.join(backup_dir_path, src_dir)
 
-            if os.path.isdir(src_subdir_path):
-                if src_dir not in backup_directories:
-                    to_create_item = sync_attribute_create.SyncAttributeCreate(
-                        index=len(self.files_to_create),
-                        original_item_path=src_subdir_path,
-                        backup_item_path=backup_subdir_path,
-                    )
-                    self.files_to_create.append(to_create_item)
-
-                else:
-                    self.scan_directory(src_subdir_path, backup_subdir_path)
-            else:
+            if not os.path.isdir(src_subdir_path):
                 self.scan_file(src_subdir_path, src_dir, backup_dir_path)
+                progress_bar.update(1)
+
+            elif src_dir in backup_directories:
+                self.scan_directory(
+                    src_subdir_path, backup_subdir_path, progress_bar=progress_bar
+                )
+
+            else:
+                to_create_item = sync_attribute_create.SyncAttributeCreate(
+                    index=len(self.files_to_create),
+                    original_item_path=src_subdir_path,
+                    backup_item_path=backup_subdir_path,
+                )
+                self.files_to_create.append(to_create_item)
+                progress_bar.update(utils.get_files_count(src_subdir_path))
 
     def perform_sync(self) -> None:
         for item in (
-            self.files_to_create
-            + self.files_to_replace
-            + self.files_to_delete
-            + self.outdated_files
+                self.files_to_create
+                + self.files_to_replace
+                + self.files_to_delete
+                + self.outdated_files
         ):
             if not item.is_canceled:
                 print(item)
@@ -178,6 +187,15 @@ class Syncer:
 
     def scan_directories(self) -> None:
         for line in self.directories_to_scan:
-            self.scan_directory(
-                src_dir_path=line["src"], backup_dir_path=line["backup"]
-            )
+            with tqdm(
+                    total=utils.get_files_count(line["src"]),
+                    unit="F",
+                    unit_scale=True,
+                    desc=f"Scanning {line['src']}",
+                    miniters=0.1,
+            ) as pbar:
+                self.scan_directory(
+                    src_dir_path=line["src"],
+                    backup_dir_path=line["backup"],
+                    progress_bar=pbar,
+                )

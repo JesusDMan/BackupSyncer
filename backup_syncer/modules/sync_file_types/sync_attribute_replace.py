@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from backup_syncer.modules.printing_utils import copy_file
+from backup_syncer.modules.utils import copy_file
 
 from backup_syncer.modules.sync_file_types.sync_attribute import SyncAttribute
 
