@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from backup_syncer.modules.utils import copy_file
+from backup_syncer.modules.utils import copy_file_with_pbar
 
 from backup_syncer.modules.sync_file_types.sync_attribute import SyncAttribute
 
@@ -24,7 +24,9 @@ class SyncAttributeReplace(SyncAttribute):
             return
 
         os.remove(self.backup_file_path)
-        copy_file(src_fp=self.source_file_path, backup_fp=self.backup_file_path)
+        copy_file_with_pbar(
+            src_fp=self.source_file_path, backup_fp=self.backup_file_path
+        )
 
     def __present__(self):
         return (

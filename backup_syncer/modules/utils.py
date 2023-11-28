@@ -6,20 +6,7 @@ from tqdm import tqdm
 
 
 def check_if_identical(fp1: str, fp2: str) -> bool:
-    """
-    Checks if two files are identical or not.
-    :param fp1: First file path
-    :param fp2: Second file path
-    :return: True if they are identical, False if not
-    """
-    if fp1 == fp2:
-        return True
-    type_f1 = os.path.splitext(fp1)[-1].lower()
-    type_f2 = os.path.splitext(fp2)[-1].lower()
-
-    if type_f1 != type_f2:
-        return False
-    return filecmp.cmp(fp1, fp2)
+    return os.path.basename(fp1) == os.path.basename(fp2) and filecmp.cmp(fp1, fp2)
 
 
 def get_item_type(item_path: str) -> str:
@@ -29,7 +16,10 @@ def get_item_type(item_path: str) -> str:
         return "file"
 
 
-def copy_file(src_fp: str, backup_fp: str) -> None:
+def copy_file_with_pbar(src_fp: str, backup_fp: str) -> None:
+    """
+    Copies "src_fp" to "backup_fp" with a progress bar (by size)
+    """
     with tqdm(
         total=os.path.getsize(src_fp),
         unit="B",
@@ -37,10 +27,13 @@ def copy_file(src_fp: str, backup_fp: str) -> None:
         desc=f"Copying {src_fp} to {backup_fp}",
         miniters=0.1,
     ) as pbar:
-        copy_file_with_progress(src_fp, backup_fp, pbar)
+        copy_file_and_update_pbar(src_fp, backup_fp, pbar)
 
 
-def copy_file_with_progress(src_fp: str, dst_fp: str, pbar: tqdm) -> None:
+def copy_file_and_update_pbar(src_fp: str, dst_fp: str, pbar: tqdm) -> None:
+    """
+    Copies a file from "src_fp" to "dst_fp" in chunks of 4096, and updates the progress bar given.
+    """
     chunk_size = 4096
     source_f = open(src_fp, "rb")
     backup_f = open(dst_fp, "wb", buffering=chunk_size * 1000)
@@ -75,7 +68,7 @@ def get_dir_size_and_files(dir_path: str) -> Tuple[int, List[str]]:
     return files_size_sum, files
 
 
-def copy_dir(src_dp: str, backup_dp: str) -> None:
+def copy_dir_with_pbar(src_dp: str, backup_dp: str) -> None:
     dir_size, files = get_dir_size_and_files(src_dp)
 
     with tqdm(
@@ -92,4 +85,4 @@ def copy_dir(src_dp: str, backup_dp: str) -> None:
                 os.makedirs(backup_dir_name)
             backup_file_path = file.replace(src_dp, backup_dp)
 
-            copy_file_with_progress(file, backup_file_path, pbar)
+            copy_file_and_update_pbar(file, backup_file_path, pbar)
